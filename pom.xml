@@ -8,5 +8,14 @@
     <artifactId>scxml-transcompiler</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/commons-scxml/commons-scxml -->
+        <dependency>
+            <groupId>commons-scxml</groupId>
+            <artifactId>commons-scxml</artifactId>
+            <version>0.9</version>
+        </dependency>
+
+    </dependencies>
 
 </project>
