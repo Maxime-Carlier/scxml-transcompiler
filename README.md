@@ -8,17 +8,20 @@
 
 This project uses Maven for dependency management.
 
-### Targeted Functionalities
+### Dependency Overview
 
-#### Easy
-* Has a state - OK
-* Can define a state as initial - OK
+* `Apache FreeMarker` is the template Engine
+* `Apache commons-scxml` will be used as a SCXML parser
 
-#### Hard
-* the StateMachine class provides a bridge for event communication
+### Project Layout
 
-### Implementation Details
+There are two Maven module in this project :
+* `generator/` is a template based engine aimed at producing standalone code of a FSM from a given SCXML input file.
+* `targetCode/` is a hand made implementation. It is the object model of the code that I'm aiming to produce with
+the generator.
 
-This FSM generator will use templated generation to create several state class extending the same abstract class.
-A Class named StateMachine will be used as a container to store current states, as well as to provide in later versions,
-a bridge for event I/O.
+### Implementation Overview
+
+The FSM generator will use the template engine to produce a standalone code that can be compiled as is.
+The code produced will be the Object Oriented implementation of an FSM implementing the functionality 
+described by the input SCXML file.
