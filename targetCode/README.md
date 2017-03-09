@@ -3,6 +3,8 @@
 ### Targeted Functionality
 
 #### Easy 
+* Has states - ![implemented](https://img.shields.io/badge/status-implemented-yellow.svg)
+* Has transitions - ![implemented](https://img.shields.io/badge/status-implemented-yellow.svg)
 * Can set the initial state - ![implemented](https://img.shields.io/badge/status-implemented-yellow.svg)
 
 #### Hard
