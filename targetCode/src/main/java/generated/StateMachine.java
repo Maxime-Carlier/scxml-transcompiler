@@ -1,8 +1,8 @@
 package generated;
 
-import model.statics.Event;
-import model.statics.State;
-import model.statics.Transition;
+import model.Event;
+import model.State;
+import model.Transition;
 
 import java.util.LinkedList;
 import java.util.Optional;
@@ -16,18 +16,16 @@ public class StateMachine {
     private static LinkedList<Event> eventQueue = new LinkedList<>();
 
     public static void build() {
-        // Generated states
-        <#list fsm.states as s>
-            State ${s.name} = new State("${s.name}");
-        </#list>
+        // Generate state here
+        State state1 = new State("State1");
+        State state2 = new State("State2");
 
-        //Generated Transition
-        <#list fsm.transitions as t>
-            ${t.stateFrom}.addTransition("${t.event}", new Transition(${t.stateFrom}, ${t.stateTo}, "${t.action}"));
-        </#list>
+        // Then generate transition here
+        state1.addTransition("b1", new Transition(state1, state2, "Start"));
 
-        initialState = ${fsm.initialState};
-        currentState = ${fsm.initialState};
+        // Then set the initial node
+        initialState = state1;
+        currentState = state1;
     }
 
     public static void activate() {
