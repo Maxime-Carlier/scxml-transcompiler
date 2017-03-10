@@ -23,7 +23,7 @@ public class StateMachine {
 
         //Generated Transition
         <#list fsm.transitions as t>
-            ${t.stateFrom}.addTransition("${t.event}", new Transition(${t.stateFrom}, ${t.stateTo}, "${t.action}"));
+            ${t.stateFrom.name}.addTransition("${t.event}", new Transition(${t.stateFrom.name}, ${t.stateTo.name}, "${t.action}"));
         </#list>
 
         initialState = ${fsm.initialState};

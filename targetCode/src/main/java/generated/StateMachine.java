@@ -37,8 +37,8 @@ public class StateMachine {
                 currentState.onExit();
                 t.get().execute();
                 t.get().getStateTo().onEntry();
-                System.out.println("Entering state : "+currentState.getName());
                 currentState = t.get().getStateTo();
+                System.out.println("Entering state : "+currentState.getName());
             }
         }
     }

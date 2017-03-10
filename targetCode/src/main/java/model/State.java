@@ -30,7 +30,7 @@ public class State {
     }
 
     public void onEntry() {
-        System.out.println("onExit state : " + name);
+        System.out.println("onEntry state : " + name);
     }
 
     public String getName() {

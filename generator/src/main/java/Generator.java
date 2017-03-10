@@ -57,7 +57,7 @@ public class Generator {
 
         fsm.put("states", states);
         fsm.put("transitions", transitions);
-        fsm.put("initialState", state1);
+        fsm.put("initialState", state1.getName());
         root.put("fsm", fsm);
     }
 }
