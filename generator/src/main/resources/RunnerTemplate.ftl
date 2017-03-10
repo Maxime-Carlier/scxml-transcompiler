@@ -1,7 +1,4 @@
-package model.statics;
-
-import generatedStateMachine;
-
+package generated;
 
 public class Runner {
     private static StateMachine sm;

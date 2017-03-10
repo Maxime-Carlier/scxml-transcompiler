@@ -1,4 +1,4 @@
-package model.statics;
+package generated;
 
 /**
  * @author Maxime

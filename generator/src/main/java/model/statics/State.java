@@ -21,7 +21,7 @@ public class State {
     }
 
     public Optional<Transition> getTransition(String s) {
-        Optional<Transition> t = Optional.of(transitionMap.get(s));
+        Optional<Transition> t = Optional.ofNullable(transitionMap.get(s));
         return t;
     }
 

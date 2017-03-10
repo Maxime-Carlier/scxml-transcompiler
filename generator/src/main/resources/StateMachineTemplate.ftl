@@ -1,9 +1,5 @@
 package generated;
 
-import model.statics.Event;
-import model.statics.State;
-import model.statics.Transition;
-
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -23,7 +19,7 @@ public class StateMachine {
 
         //Generated Transition
         <#list fsm.transitions as t>
-            ${t.stateFrom.name}.addTransition("${t.event}", new Transition(${t.stateFrom.name}, ${t.stateTo.name}, "${t.action}"));
+            ${t.stateFrom.name}.addTransition(new Transition(${t.stateFrom.name}, ${t.stateTo.name}, "${t.event}", "${t.action}"));
         </#list>
 
         initialState = ${fsm.initialState};
@@ -39,8 +35,8 @@ public class StateMachine {
                 currentState.onExit();
                 t.get().execute();
                 t.get().getStateTo().onEntry();
-                System.out.println("Entering state : "+currentState.getName());
                 currentState = t.get().getStateTo();
+                System.out.println("Entering state : "+currentState.getName());
             }
         }
     }

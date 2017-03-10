@@ -1,4 +1,4 @@
-package model;
+package generated;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -16,8 +16,8 @@ public class State {
         this.transitionMap = new HashMap<>();
     }
 
-    public void addTransition(String eventName, Transition t) {
-        transitionMap.put(eventName, t);
+    public void addTransition(Transition t) {
+        transitionMap.put(t.getEvent(), t);
     }
 
     public Optional<Transition> getTransition(String s) {
@@ -30,7 +30,7 @@ public class State {
     }
 
     public void onEntry() {
-        System.out.println("onEntry state : " + name);
+        System.out.println("onExit state : " + name);
     }
 
     public String getName() {
