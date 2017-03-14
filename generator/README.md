@@ -17,8 +17,11 @@ It should in the end, be able to produce the FSM that implement several function
 
 #### Easy
 * Generate the configuration - ![implemented](https://img.shields.io/badge/status-implemented-yellow.svg)
-* Generate data model for a static case - ![checkec](https://img.shields.io/badge/status-checked-yellowgreen.svg)
-* Output files in a distinct project - ![checkec](https://img.shields.io/badge/status-checked-yellowgreen.svg)
+* Generate data model for a static case - ![checked](https://img.shields.io/badge/status-checked-yellowgreen.svg)
+* Output files in a distinct project - ![checked](https://img.shields.io/badge/status-checked-yellowgreen.svg)
+
+### Medium
+* Create all state instance from a SCXML file ![planned](https://img.shields.io/badge/status-planned-blue.svg)
 
 
 

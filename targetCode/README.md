@@ -8,7 +8,7 @@
 * Can set the initial state - ![implemented](https://img.shields.io/badge/status-implemented-yellow.svg)
 
 #### Hard
-* The StateMachine class provides a bridge for event communication - ![planned](https://img.shields.io/badge/status-planned-blue.svg)
+* The StateMachine class provides a bridge for event communication - ![idea](https://img.shields.io/badge/status-idea-6600cc.svg)
 
 ### Implementation details
 

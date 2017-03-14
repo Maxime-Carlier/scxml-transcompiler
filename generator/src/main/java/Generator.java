@@ -19,17 +19,25 @@ import java.util.Map;
  */
 public class Generator {
 
-    private static Configuration cfg;
-    private static Map<String, Object> root;
+    // Static association 2d array to link template input name to class output name
+    private final static String[][] TEMPLATES_IO_ASSOC = {
+            {"StateMachineTemplate.ftl", "StateMachine.java"},
+            {"EventTemplate.ftl","Event.java"},
+            {"RunnerTemplate.ftl","Runner.java"},
+            {"StateTemplate.ftl","State.java"},
+            {"TransitionTemplate.ftl", "Transition.java"}
+    };
 
-    public static void main(String[] args) {
-        buildConfiguration();
-        buildDataModel();
-        generateTemplate();
+    private final Configuration cfg;
+    private final String outputDirectory;
+    private Map<String, Object> root;
+
+    private Generator(Configuration cfg, String outputDirectory) {
+        this.cfg=cfg;
+        this.outputDirectory = outputDirectory;
     }
 
-
-    public static void buildDataModel() {
+    public void testDataModel() {
         root = new HashMap<>();
         Map<String, Object> fsm = new HashMap<>();
         List<State> states = new ArrayList<>();
@@ -51,51 +59,48 @@ public class Generator {
         root.put("fsm", fsm);
     }
 
-    public static void buildConfiguration() {
-        cfg = new Configuration(Configuration.VERSION_2_3_25);
+    public void generate() {
         try {
-            cfg.setDirectoryForTemplateLoading(new File("generator/src/main/resources"));
-            cfg.setDefaultEncoding("UTF-8");
-            cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-            cfg.setLogTemplateExceptions(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void generateTemplate() {
-        try {
-            Template stateMachineTemplate = cfg.getTemplate("StateMachineTemplate.ftl");
-            Template eventTemplate = cfg.getTemplate("EventTemplate.ftl");
-            Template runnerTemplate = cfg.getTemplate("RunnerTemplate.ftl");
-            Template stateTemplate = cfg.getTemplate("StateTemplate.ftl");
-            Template transitionTemplate = cfg.getTemplate("TransitionTemplate.ftl");
-
-            Writer out;
-
-            out = new FileWriter("production/src/main/java/generated/StateMachine.java");
-            stateMachineTemplate.process(root, out);
-            out.close();
-
-            out = new FileWriter("production/src/main/java/generated/Event.java");
-            eventTemplate.process(root, out);
-            out.close();
-
-            out = new FileWriter("production/src/main/java/generated/Runner.java");
-            runnerTemplate.process(root, out);
-            out.close();
-
-            out = new FileWriter("production/src/main/java/generated/State.java");
-            stateTemplate.process(root, out);
-            out.close();
-
-            out = new FileWriter("production/src/main/java/generated/Transition.java");
-            transitionTemplate.process(root, out);
-            out.close();
+            for (String[] pairing : TEMPLATES_IO_ASSOC) {
+                Template t = cfg.getTemplate(pairing[0]);
+                Writer out = new FileWriter(outputDirectory + pairing[1]);
+                t.process(root, out);
+                out.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (TemplateException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static class GeneratorBuilder {
+        public static final String DEFAULT_OUTPUT_DIRECTORY = "production/src/main/java/generated/";
+        public static final String DEFAULT_RESOURCE_DIRECTORY = "generator/src/main/resources/";
+
+        private Configuration cfg;
+        private String outputDirectory;
+
+        public GeneratorBuilder withDefaultConfig() {
+            cfg = new Configuration(Configuration.VERSION_2_3_25);
+            cfg.setDefaultEncoding("UTF-8");
+            cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+            cfg.setLogTemplateExceptions(false);
+            return this;
+        }
+
+        public GeneratorBuilder templatesDirectory(String directory) throws IOException {
+            cfg.setDirectoryForTemplateLoading(new File(directory));
+            return this;
+        }
+
+        public GeneratorBuilder outputDirectory(String directory) {
+            outputDirectory = directory;
+            return this;
+        }
+
+        public Generator build() {
+            return new Generator(cfg, outputDirectory);
         }
     }
 }

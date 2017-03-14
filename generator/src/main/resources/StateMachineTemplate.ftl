@@ -14,12 +14,12 @@ public class StateMachine {
     public static void build() {
         // Generated states
         <#list fsm.states as s>
-            State ${s.name} = new State("${s.name}");
+        State ${s.name} = new State("${s.name}");
         </#list>
 
         //Generated Transition
         <#list fsm.transitions as t>
-            ${t.stateFrom.name}.addTransition(new Transition(${t.stateFrom.name}, ${t.stateTo.name}, "${t.event}", "${t.action}"));
+        ${t.stateFrom.name}.addTransition(new Transition(${t.stateFrom.name}, ${t.stateTo.name}, "${t.event}", "${t.action}"));
         </#list>
 
         initialState = ${fsm.initialState};
