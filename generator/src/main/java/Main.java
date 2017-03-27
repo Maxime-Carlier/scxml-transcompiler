@@ -9,10 +9,10 @@ public class Main {
             Generator g = new Generator.GeneratorBuilder()
                     .withDefaultConfig()
                     .templatesDirectory(Generator.GeneratorBuilder.DEFAULT_RESOURCE_DIRECTORY)
-                    .outputDirectory(Generator.GeneratorBuilder.DEFAULT_OUTPUT_DIRECTORY)
+                    .outputPackage("StateMachine1")
                     .build();
-            g.testDataModel();
-            g.generate();
+            //g.testDataModel();
+            //g.generate();
         } catch (IOException e) {
             e.printStackTrace();
         }

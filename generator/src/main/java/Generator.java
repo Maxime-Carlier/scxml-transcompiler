@@ -2,13 +2,17 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
-import model.statics.State;
-import model.statics.Transition;
+import org.apache.commons.scxml.env.SimpleErrorHandler;
+import org.apache.commons.scxml.model.ModelException;
+import org.apache.commons.scxml.model.SCXML;
+import org.apache.commons.scxml.io.SCXMLParser;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+import java.io.*;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +32,10 @@ public class Generator {
             {"TransitionTemplate.ftl", "Transition.java"}
     };
 
+    // This will hold the final path of all generated class
+    //It is needed by the compile() method to compile generated sources
+    private String[] outputPath;
+
     private final Configuration cfg;
     private final String outputDirectory;
     private Map<String, Object> root;
@@ -35,28 +43,11 @@ public class Generator {
     private Generator(Configuration cfg, String outputDirectory) {
         this.cfg=cfg;
         this.outputDirectory = outputDirectory;
-    }
 
-    public void testDataModel() {
-        root = new HashMap<>();
-        Map<String, Object> fsm = new HashMap<>();
-        List<State> states = new ArrayList<>();
-        List<Transition> transitions = new ArrayList<>();
-
-        State state1 = new State("state1");
-        State state2 = new State("state2");
-        states.add(state1);
-        states.add(state2);
-
-        Transition transition1_2 = new Transition(state1, state2, "b1", "Start");
-        transitions.add(transition1_2);
-
-        state1.addTransition(transition1_2);
-
-        fsm.put("states", states);
-        fsm.put("transitions", transitions);
-        fsm.put("initialState", state1.getName());
-        root.put("fsm", fsm);
+        outputPath = new String[TEMPLATES_IO_ASSOC.length];
+        for(int i=0;i<outputPath.length;i++) {
+            outputPath[i] = outputDirectory + TEMPLATES_IO_ASSOC[i][1];
+        }
     }
 
     public void generate() {
@@ -74,8 +65,14 @@ public class Generator {
         }
     }
 
+    private void compile() {
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        compiler.run(null, null, null, outputPath);
+        URLClassLoader classLoader = URLClassLoader.newInstance()
+    }
+
     public static class GeneratorBuilder {
-        public static final String DEFAULT_OUTPUT_DIRECTORY = "production/src/main/java/generated/";
+        private static final String DEFAULT_OUTPUT_DIRECTORY = "generator/src/main/java/generated/";
         public static final String DEFAULT_RESOURCE_DIRECTORY = "generator/src/main/resources/";
 
         private Configuration cfg;
@@ -94,8 +91,26 @@ public class Generator {
             return this;
         }
 
-        public GeneratorBuilder outputDirectory(String directory) {
-            outputDirectory = directory;
+        public GeneratorBuilder outputPackage(String packageName) {
+            if (packageName.charAt(packageName.length() - 1) != '/') {
+                packageName += '/';
+            }
+            outputDirectory = DEFAULT_OUTPUT_DIRECTORY + packageName;
+            return this;
+        }
+
+        public GeneratorBuilder fromXML(String filePath) {
+            try {
+                InputSource source = new InputSource(new BufferedReader(new FileReader(filePath)));
+                SCXML scxml = SCXMLParser.parse(source, new SimpleErrorHandler());
+                scxml.getDatamodel().getData();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (SAXException e) {
+                e.printStackTrace();
+            } catch (ModelException e) {
+                e.printStackTrace();
+            }
             return this;
         }
 
