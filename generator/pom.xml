@@ -9,13 +9,6 @@
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
-        <!-- SCXML parser-->
-        <dependency>
-            <groupId>commons-scxml</groupId>
-            <artifactId>commons-scxml</artifactId>
-            <version>0.9</version>
-        </dependency>
-
         <!-- Template generation -->
         <dependency>
             <groupId>org.freemarker</groupId>

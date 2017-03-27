@@ -12,6 +12,8 @@ import org.xml.sax.SAXException;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +33,8 @@ public class Generator {
             {"StateTemplate.ftl","State.java"},
             {"TransitionTemplate.ftl", "Transition.java"}
     };
+
+    private final static String SM_QUALIFIED_CLASSNAME = "generated.StateMachine";
 
     // This will hold the final path of all generated class
     //It is needed by the compile() method to compile generated sources
@@ -63,17 +67,31 @@ public class Generator {
         } catch (TemplateException e) {
             e.printStackTrace();
         }
+        compile();
     }
 
     private void compile() {
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        compiler.run(null, null, null, outputPath);
-        URLClassLoader classLoader = URLClassLoader.newInstance()
+        try {
+            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+            compiler.run(null, null, null, outputPath);
+            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{new File(outputDirectory).toURI().toURL()});
+            Class<?> cls = Class.forName(SM_QUALIFIED_CLASSNAME);
+            Object o = cls.newInstance();
+            System.out.println(o);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
     }
 
     public static class GeneratorBuilder {
-        private static final String DEFAULT_OUTPUT_DIRECTORY = "generator/src/main/java/generated/";
-        public static final String DEFAULT_RESOURCE_DIRECTORY = "generator/src/main/resources/";
+        private static final String DEFAULT_OUTPUT_DIRECTORY = "target/generated-sources/";
+        public static final String DEFAULT_RESOURCE_DIRECTORY = "src/main/resources/";
 
         private Configuration cfg;
         private String outputDirectory;
