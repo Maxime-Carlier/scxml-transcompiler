@@ -1,3 +1,5 @@
+import generator.Generator;
+
 import java.io.IOException;
 
 /**

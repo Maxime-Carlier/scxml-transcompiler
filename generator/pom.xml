@@ -20,6 +20,12 @@
             <artifactId>junit</artifactId>
             <version>LATEST</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jdom/jdom2 -->
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom2</artifactId>
+            <version>LATEST</version>
+        </dependency>
 
     </dependencies>
 

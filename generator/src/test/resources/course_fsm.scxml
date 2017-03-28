@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" name="course_fsm" qt:editorversion="4.2.1" xmlns:qt="http://www.qt.io/2015/02/scxml-ext">
+    <state id="normalOperation">
+        <qt:editorinfo geometry="236.34;183.14;-252.35;-740.81;1379.95;1030.91" scenegeometry="236.34;183.14;-16.01;-557.67;1379.95;1030.91"/>
+        <parallel id="parallelState">
+            <qt:editorinfo geometry="-28.65;3.07;-203.70;-625.56;1339.95;892.59" scenegeometry="207.69;186.21;3.99;-439.35;1339.95;892.59"/>
+            <state id="LampControl">
+                <qt:editorinfo geometry="734.72;-383.40;-243.07;-132;622.07;757" scenegeometry="942.41;-197.19;699.34;-329.19;622.07;757"/>
+                <state id="LampOff">
+                    <qt:editorinfo geometry="-95.67;291.22;-60;-50;120;100" scenegeometry="846.74;94.03;786.74;44.03;120;100"/>
+                    <transition type="external" event="startBlinking" target="LampBlinking">
+                        <qt:editorinfo endTargetFactors="6.58;33.90"/>
+                    </transition>
+                </state>
+                <state id="LampBlinking">
+                    <qt:editorinfo geometry="141.59;105.65;-94.32;-112.84;297.36;445.84" scenegeometry="1084;-91.54;989.68;-204.38;297.36;445.84"/>
+                    <state id="LampBlinkOff">
+                        <qt:editorinfo geometry="13.31;4.09;-60;-50;212;119" scenegeometry="1097.31;-87.45;1037.31;-137.45;212;119"/>
+                        <transition type="external" event="timeout" target="LampBlinkOn">
+                            <qt:editorinfo endTargetFactors="20.98;33.57"/>
+                        </transition>
+                    </state>
+                    <state id="LampBlinkOn">
+                        <qt:editorinfo geometry="-2.03;179.28;-60;-50;227;151" scenegeometry="1081.97;87.74;1021.97;37.74;227;151"/>
+                        <transition type="external" event="timeout" target="LampBlinkOff">
+                            <qt:editorinfo endTargetFactors="80.13;79.50"/>
+                        </transition>
+                    </state>
+                    <transition type="external" event="stopBlinking" target="LampOff">
+                        <qt:editorinfo endTargetFactors="83.27;55.81"/>
+                    </transition>
+                </state>
+                <initial>
+                    <qt:editorinfo geometry="-98.78;89.17;-20;-20;40;40" scenegeometry="843.63;-108.02;823.63;-128.02;40;40"/>
+                    <transition type="external" target="LampOff">
+                        <qt:editorinfo endTargetFactors="49.23;19.42"/>
+                    </transition>
+                </initial>
+            </state>
+            <state id="DoorControl">
+                <qt:editorinfo geometry="-12.94;-282.97;-170.76;-232.63;672.64;762.63" scenegeometry="194.75;-96.76;23.99;-329.39;672.64;762.63"/>
+                <initial>
+                    <qt:editorinfo geometry="-42.97;306.95;-20;-20;40;40" scenegeometry="158.59;471.66;138.59;451.66;40;40"/>
+                    <transition type="external" target="opened">
+                        <qt:editorinfo endTargetFactors="43.91;88.79"/>
+                    </transition>
+                </initial>
+                <state id="opened">
+                    <qt:editorinfo geometry="-33.76;203.62;-60;-50;120;100" scenegeometry="167.80;368.33;107.80;318.33;120;100"/>
+                    <transition type="external" event="close" target="isClosing">
+                        <qt:editorinfo endTargetFactors="8.09;53.22" localGeometry="-0.02;-221.88"/>
+                        <send event="startBlinking"/>
+                    </transition>
+                </state>
+                <state id="isClosing">
+                    <qt:editorinfo geometry="187.80;-23.53;-60;-50;120;100" scenegeometry="382.55;-120.29;322.55;-170.29;120;100"/>
+                    <transition type="external" event="isClosed" target="closed">
+                        <qt:editorinfo localGeometry="209.62;0"/>
+                        <send event="stopBlinking"/>
+                    </transition>
+                    <transition type="external" event="obstacleDetected" target="isOpening"/>
+                </state>
+                <state id="isOpening">
+                    <qt:editorinfo geometry="186.78;217.28;-60;-50;120;100" scenegeometry="381.53;120.52;321.53;70.52;120;100"/>
+                    <transition type="external" event="osOpened" target="opened">
+                        <qt:editorinfo endTargetFactors="74.82;48.24"/>
+                        <send event="stopBlinking"/>
+                    </transition>
+                </state>
+                <state id="closed">
+                    <qt:editorinfo geometry="397.42;133.37;-60;-50;120;100" scenegeometry="592.17;36.61;532.17;-13.39;120;100"/>
+                    <transition type="external" event="open" target="isOpening">
+                        <send event="startBlinking"/>
+                    </transition>
+                </state>
+            </state>
+        </parallel>
+        <transition type="external" event="stop" target="Final_2"/>
+    </state>
+    <final id="Final_2">
+        <qt:editorinfo geometry="1506.65;29.95;-20;-20;40;40" scenegeometry="1506.65;29.95;1486.65;9.95;40;40"/>
+    </final>
+</scxml>

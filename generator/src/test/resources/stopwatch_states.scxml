@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" name="stopwatch_states" qt:editorversion="4.2.1" initial="Idle">
+    <final id="Final_1">
+        <qt:editorinfo geometry="664.56;874.80;-20;-20;40;40" scenegeometry="664.56;874.80;644.56;854.80;40;40"/>
+    </final>
+    <parallel id="CountAndSave">
+        <qt:editorinfo geometry="182.38;161.49;-132.56;-24.26;1303.77;654.37" scenegeometry="182.38;161.49;49.82;137.23;1303.77;654.37"/>
+        <state id="Count">
+            <qt:editorinfo geometry="42.07;124.11;-131.97;-25.78;561.38;408.89" scenegeometry="224.45;285.60;92.48;259.82;561.38;408.89"/>
+            <state id="Counting">
+                <qt:editorinfo geometry="149.80;88.75;-145;-50;205;100" scenegeometry="374.25;374.35;229.25;324.35;205;100"/>
+                <transition type="external" event="b2" target="Paused">
+                    <send event="Pause"/>
+                </transition>
+                <transition type="external" event="timeout" target="Counting">
+                    <send event="refreshDisplay"/>
+                </transition>
+                <onentry>
+                    <send event="timeout" delay="7ms"/>
+                </onentry>
+            </state>
+            <state id="Paused">
+                <qt:editorinfo geometry="349.41;89.03;-60;-50;120;100" scenegeometry="1007.41;194.03;947.41;144.03;120;100"/>
+                <transition type="external" event="b2" target="Counting">
+                    <qt:editorinfo localGeometry="-0.69;-89.63;-242.08;-89.63"/>
+                    <send event="Resume"/>
+                </transition>
+            </state>
+        </state>
+        <state id="Save" initial="ReadyToSave">
+            <qt:editorinfo geometry="567.87;221.42;-60;-50;540;263" scenegeometry="750.25;382.91;690.25;332.91;540;263"/>
+            <state id="Reseting">
+                <qt:editorinfo geometry="399.99;94.62;-60;-50;120;100" scenegeometry="1150.24;477.53;1090.24;427.53;120;100"/>
+                <transition type="external" event="EPSILON" target="ReadyToSave">
+                    <qt:editorinfo localGeometry="-0.76;-70.39;-362.19;-70.39"/>
+                </transition>
+                <onentry>
+                    <send event="EPSILON"/>
+                </onentry>
+            </state>
+            <state id="ReadyToSave">
+                <qt:editorinfo geometry="39.06;94.62;-70;-50;139;100" scenegeometry="65.68;416.48;-4.32;366.48;139;100"/>
+                <transition type="external" event="b3" target="Saving">
+                    <qt:editorinfo startTargetFactors="89.03;68.84" endTargetFactors="13.24;69.71" movePoint="28.65;5.12"/>
+                    <send event="Save"/>
+                </transition>
+            </state>
+            <state id="Saving">
+                <qt:editorinfo geometry="233.84;94.62;-60;-50;120;100" scenegeometry="260.46;416.48;200.46;366.48;120;100"/>
+                <transition type="external" event="b3" target="Reseting">
+                    <qt:editorinfo endTargetFactors="22.92;57.06"/>
+                    <send event="Reset_Lap"/>
+                </transition>
+                <onentry>
+                    <send event="setBack" delay="1s"/>
+                </onentry>
+                <transition type="external" event="setBack" target="ReadyToSave">
+                    <qt:editorinfo startTargetFactors="11.03;23.36" endTargetFactors="87.74;25.28" movePoint="18.42;-22.51"/>
+                </transition>
+            </state>
+        </state>
+        <transition type="external" event="b1" target="Stopped">
+            <qt:editorinfo startTargetFactors="0.94;50.15"/>
+            <send event="Stop"/>
+        </transition>
+    </parallel>
+    <state id="Stopped">
+        <qt:editorinfo geometry="-115.22;567.60;-60;-50;120;100" scenegeometry="-115.22;567.60;-175.22;517.60;120;100"/>
+        <transition type="external" event="b1" target="Idle">
+            <qt:editorinfo endTargetFactors="52.21;88.79" movePoint="-13.48;3"/>
+            <send event="Reset"/>
+        </transition>
+    </state>
+    <state id="Idle">
+        <qt:editorinfo geometry="-104.88;360.24;-70.34;-46.38;120;100" scenegeometry="-104.88;360.24;-175.22;313.86;120;100"/>
+        <transition type="external" event="b1" target="CountAndSave">
+            <qt:editorinfo endTargetFactors="1.09;33.13" movePoint="9.21;-2.04"/>
+            <send event="Start"/>
+        </transition>
+    </state>
+</scxml>

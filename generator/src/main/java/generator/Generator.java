@@ -1,23 +1,27 @@
+package generator;
+
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
-import org.apache.commons.scxml.env.SimpleErrorHandler;
-import org.apache.commons.scxml.model.ModelException;
-import org.apache.commons.scxml.model.SCXML;
-import org.apache.commons.scxml.io.SCXMLParser;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import model.statics.State;
+import model.statics.Transition;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,9 +48,10 @@ public class Generator {
     private final String outputDirectory;
     private Map<String, Object> root;
 
-    private Generator(Configuration cfg, String outputDirectory) {
+    private Generator(Configuration cfg, String outputDirectory, HashMap<String, Object> dataModel) {
         this.cfg=cfg;
         this.outputDirectory = outputDirectory;
+        this.root = dataModel;
 
         outputPath = new String[TEMPLATES_IO_ASSOC.length];
         for(int i=0;i<outputPath.length;i++) {
@@ -95,6 +100,18 @@ public class Generator {
 
         private Configuration cfg;
         private String outputDirectory;
+        private HashMap<String, Object> dataModel;
+        private HashMap<String, Object> fsm;
+        private ArrayList<State> states;
+        private ArrayList<Transition> transitions;
+
+
+        public GeneratorBuilder() {
+            dataModel = new HashMap<>();
+            fsm = new HashMap<>();
+            states = new ArrayList<>();
+            transitions = new ArrayList<>();
+        }
 
         public GeneratorBuilder withDefaultConfig() {
             cfg = new Configuration(Configuration.VERSION_2_3_25);
@@ -117,23 +134,63 @@ public class Generator {
             return this;
         }
 
-        public GeneratorBuilder fromXML(String filePath) {
-            try {
-                InputSource source = new InputSource(new BufferedReader(new FileReader(filePath)));
-                SCXML scxml = SCXMLParser.parse(source, new SimpleErrorHandler());
-                scxml.getDatamodel().getData();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (SAXException e) {
-                e.printStackTrace();
-            } catch (ModelException e) {
-                e.printStackTrace();
-            }
+        public GeneratorBuilder fromXML(String filePath) throws JDOMException, IOException {
+            // XML Parser init
+            SAXBuilder sxb = new SAXBuilder();
+            Document document = sxb.build(new File(filePath));
+
+            // Parse all states in the xml and create instance
+            handleElement(document.getRootElement());
+
+            // Arranging DataModel
+            fsm.put("states", states);
+            fsm.put("transitions", transitions);
+            //fsm.put("initialState", state1.getName());
+            dataModel.put("fsm", fsm);
             return this;
         }
 
+        private void handleElement(Element e) {
+            if (e.getName() == "state") {
+                states.add(new State(e.getAttribute("id").getValue()));
+            }
+            for (Element subElement : e.getChildren()) {
+                handleElement(subElement);
+            }
+        }
+
+        /*public static void buildDataModel() {
+        root = new HashMap<>();
+        Map<String, Object> fsm = new HashMap<>();
+        List<State> states = new ArrayList<>();
+        List<Transition> transitions = new ArrayList<>();
+
+        State state1 = new State("state1");
+        State state2 = new State("state2");
+        states.add(state1);
+        states.add(state2);
+
+        Transition transition1_2 = new Transition(state1, state2, "b1", "Start");
+        transitions.add(transition1_2);
+
+        state1.addTransition(transition1_2);
+
+        fsm.put("states", states);
+        fsm.put("transitions", transitions);
+        fsm.put("initialState", state1.getName());
+        root.put("fsm", fsm);
+    }*/
+
+        public ArrayList<State> getStates() {
+            return states;
+        }
+
+        public ArrayList<Transition> getTransitions() {
+            return transitions;
+        }
+
         public Generator build() {
-            return new Generator(cfg, outputDirectory);
+            return new Generator(cfg, outputDirectory, dataModel);
         }
     }
 }
