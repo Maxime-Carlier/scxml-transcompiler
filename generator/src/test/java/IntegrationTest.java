@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.junit.Assert.*;
+
 /**
  * @author Maxime
  */
@@ -18,7 +20,7 @@ public class IntegrationTest {
             g = new Generator.GeneratorBuilder()
                     .withDefaultConfig()
                     .templatesDirectory(Generator.GeneratorBuilder.DEFAULT_RESOURCE_DIRECTORY)
-                    .outputPackage("StateMachine1");
+                    .outputDirectory("StateMachine1");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -28,7 +30,7 @@ public class IntegrationTest {
     public void test355() throws JDOMException, IOException {
         ClassLoader cl = getClass().getClassLoader();
         g.fromXML(cl.getResource("test355.txml").getPath());
-        /*Generator gen=g.build();
-        gen.generate();*/
+        Generator gen=g.build();
+        gen.generate();
     }
 }

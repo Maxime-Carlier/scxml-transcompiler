@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
@@ -27,7 +26,7 @@ public class ParsingTest {
             g = new Generator.GeneratorBuilder()
                     .withDefaultConfig()
                     .templatesDirectory(Generator.GeneratorBuilder.DEFAULT_RESOURCE_DIRECTORY)
-                    .outputPackage("StateMachine1");
+                    .outputDirectory("StateMachine1");
         } catch (IOException e) {
             e.printStackTrace();
         }

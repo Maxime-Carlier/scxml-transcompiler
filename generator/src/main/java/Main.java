@@ -11,7 +11,7 @@ public class Main {
             Generator g = new Generator.GeneratorBuilder()
                     .withDefaultConfig()
                     .templatesDirectory(Generator.GeneratorBuilder.DEFAULT_RESOURCE_DIRECTORY)
-                    .outputPackage("StateMachine1")
+                    .outputDirectory("StateMachine1")
                     .build();
             //g.testDataModel();
             //g.generate();

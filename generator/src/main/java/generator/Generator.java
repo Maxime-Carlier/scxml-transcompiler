@@ -38,32 +38,43 @@ public class Generator {
             {"TransitionTemplate.ftl", "Transition.java"}
     };
 
+    // Fully Qualified class name for dynamic instantiation after generation by the ClassLoader
     private final static String SM_QUALIFIED_CLASSNAME = "generated.StateMachine";
 
     // This will hold the final path of all generated class
-    //It is needed by the compile() method to compile generated sources
+    // It is needed by the compile() method to compile generated sources
     private String[] outputPath;
 
+    // FreeMarker library template generation config and datamodel
     private final Configuration cfg;
     private final String outputDirectory;
+    private final String outputDirectoryWithpackageName;
     private Map<String, Object> root;
 
-    private Generator(Configuration cfg, String outputDirectory, HashMap<String, Object> dataModel) {
+    private Generator(Configuration cfg, String outputDirectory, String packageName, HashMap<String, Object> dataModel) {
         this.cfg=cfg;
         this.outputDirectory = outputDirectory;
+        this.outputDirectoryWithpackageName = outputDirectory + packageName;
         this.root = dataModel;
 
         outputPath = new String[TEMPLATES_IO_ASSOC.length];
         for(int i=0;i<outputPath.length;i++) {
-            outputPath[i] = outputDirectory + TEMPLATES_IO_ASSOC[i][1];
+            outputPath[i] = outputDirectoryWithpackageName + TEMPLATES_IO_ASSOC[i][1];
         }
     }
 
+    /**
+     * Generate all the freemarker templates contained in the folder defined in the Configuration {@link #cfg} attribute with the Datamodel {@link #root}
+     * to the directory {@link #outputDirectory}. Then compile generated sources.
+     */
     public void generate() {
         try {
             for (String[] pairing : TEMPLATES_IO_ASSOC) {
                 Template t = cfg.getTemplate(pairing[0]);
-                Writer out = new FileWriter(outputDirectory + pairing[1]);
+                System.out.println(System.getProperty("user.dir"));
+                File fileOutputDirectory = new File(outputDirectoryWithpackageName);
+                fileOutputDirectory.mkdirs();
+                Writer out = new FileWriter(outputDirectoryWithpackageName + pairing[1]);
                 t.process(root, out);
                 out.close();
             }
@@ -75,14 +86,17 @@ public class Generator {
         compile();
     }
 
-    private void compile() {
+    /**
+     * Compile the sources that matches the names in {@link #outputPath} and instantiate a state machine
+     */
+    private Object compile() {
         try {
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
             compiler.run(null, null, null, outputPath);
             URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{new File(outputDirectory).toURI().toURL()});
-            Class<?> cls = Class.forName(SM_QUALIFIED_CLASSNAME);
+            Class<?> cls = Class.forName(SM_QUALIFIED_CLASSNAME, true, classLoader);
             Object o = cls.newInstance();
-            System.out.println(o);
+            return o;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -92,10 +106,15 @@ public class Generator {
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
+    /**
+     * Builder nested class for Builder Pattern
+     */
     public static class GeneratorBuilder {
         private static final String DEFAULT_OUTPUT_DIRECTORY = "target/generated-sources/";
+        private static final String DEFAULT_PACKAGE = "generated/";
         public static final String DEFAULT_RESOURCE_DIRECTORY = "src/main/resources/";
 
         private Configuration cfg;
@@ -104,7 +123,7 @@ public class Generator {
         private HashMap<String, Object> fsm;
         private ArrayList<State> states;
         private ArrayList<Transition> transitions;
-
+        private State initialState;
 
         public GeneratorBuilder() {
             dataModel = new HashMap<>();
@@ -113,6 +132,10 @@ public class Generator {
             transitions = new ArrayList<>();
         }
 
+        /**
+         * Create the configuration with default parameters
+         * @return this
+         */
         public GeneratorBuilder withDefaultConfig() {
             cfg = new Configuration(Configuration.VERSION_2_3_25);
             cfg.setDefaultEncoding("UTF-8");
@@ -121,19 +144,37 @@ public class Generator {
             return this;
         }
 
+        /**
+         * Set the folder containing the .ftl templates
+         * @param directory the directory that contains the templates
+         * @return this
+         * @throws IOException
+         */
         public GeneratorBuilder templatesDirectory(String directory) throws IOException {
             cfg.setDirectoryForTemplateLoading(new File(directory));
             return this;
         }
 
-        public GeneratorBuilder outputPackage(String packageName) {
-            if (packageName.charAt(packageName.length() - 1) != '/') {
-                packageName += '/';
+        /**
+         * Set the ouput package
+         * @param outDirectory the output package
+         * @return this
+         */
+        public GeneratorBuilder outputDirectory(String outDirectory) {
+            if (outDirectory.charAt(outDirectory.length() - 1) != '/') {
+                outDirectory += '/';
             }
-            outputDirectory = DEFAULT_OUTPUT_DIRECTORY + packageName;
+            outputDirectory = DEFAULT_OUTPUT_DIRECTORY + outDirectory;
             return this;
         }
 
+        /**
+         * Create a DataModel from a .scxml file
+         * @param filePath the path to the scxml file
+         * @return thsi
+         * @throws JDOMException
+         * @throws IOException
+         */
         public GeneratorBuilder fromXML(String filePath) throws JDOMException, IOException {
             // XML Parser init
             SAXBuilder sxb = new SAXBuilder();
@@ -142,14 +183,23 @@ public class Generator {
             // Parse all states in the xml and create instance
             handleElement(document.getRootElement());
 
+            // If no initial state has been found set the first state as initial (spec 355)
+            if(initialState==null) {
+                initialState = states.get(0);
+            }
+
             // Arranging DataModel
             fsm.put("states", states);
             fsm.put("transitions", transitions);
-            //fsm.put("initialState", state1.getName());
+            fsm.put("initialState", initialState.getName());
             dataModel.put("fsm", fsm);
             return this;
         }
 
+        /**
+         * private function for scxml file parsing
+         * @param e current element to be processed. On first call, should always be the root of the xml tree
+         */
         private void handleElement(Element e) {
             if (e.getName() == "state") {
                 states.add(new State(e.getAttribute("id").getValue()));
@@ -189,8 +239,12 @@ public class Generator {
             return transitions;
         }
 
+        /**
+         * Instantiate a generator with the current parameters
+         * @return A generator
+         */
         public Generator build() {
-            return new Generator(cfg, outputDirectory, dataModel);
+            return new Generator(cfg, outputDirectory, DEFAULT_PACKAGE, dataModel);
         }
     }
 }
