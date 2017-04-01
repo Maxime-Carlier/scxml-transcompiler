@@ -124,12 +124,14 @@ public class Generator {
         private String initialStateName;
         private boolean initialStateAbsent=false;
         private boolean resolveInitialState=false;
+        private HashMap<String, State> stateMap;
 
         public GeneratorBuilder() {
             dataModel = new HashMap<>();
             fsm = new HashMap<>();
             states = new ArrayList<>();
             transitions = new ArrayList<>();
+            stateMap = new HashMap<>();
         }
 
         /**
@@ -180,17 +182,14 @@ public class Generator {
             SAXBuilder sxb = new SAXBuilder();
             Document document = sxb.build(new File(filePath));
 
-            // Parse all states in the xml and create instance
-            handleElement(document.getRootElement());
+            // Parse all states element, create instance, fills Map and List
+            handleStatesOnly(document.getRootElement());
+            // Parse other element
+            handleOtherElement(document.getRootElement());
 
             // If initial state was specified in <scxml> root element
             if (resolveInitialState) {
-                // Parse all states and look for matching instance
-                for (State s : states) {
-                    if (s.getName().equals(initialStateName)) {
-                        initialState = s;
-                    }
-                }
+                initialState = stateMap.get(initialStateName);
             }
 
             // If no initial state has been found set the first state as initial (spec 355)
@@ -207,14 +206,34 @@ public class Generator {
         }
 
         /**
-         * private function for scxml file parsing
-         * @param e current element to be processed. On first call, should always be the root of the xml tree
+         * Parse all elements in scxml and handle only states element
+         * @param e the element to be handled
          */
-        private void handleElement(Element e) {
+        private void handleStatesOnly(Element e) {
             switch (e.getName()) {
                 case "state":
-                    states.add(new State(e.getAttribute("id").getValue()));
+                    State s = new State(e.getAttribute("id").getValue());
+                    states.add(s);
+                    stateMap.put(s.getName(), s);
                     break;
+                case "parallel":
+                    State s2 = new State(e.getAttribute("id").getValue());
+                    states.add(s2);
+                    stateMap.put(s2.getName(), s2);
+                    break;
+            }
+
+            for (Element subElement : e.getChildren()) {
+                handleStatesOnly(subElement);
+            }
+        }
+
+        /**
+         * Parse all elements that are not states.
+         * @param e current element to be processed. On first call, should always be the root of the xml tree
+         */
+        private void handleOtherElement(Element e) {
+            switch (e.getName()) {
                 case "scxml":
                     String initial = e.getAttribute("initial").getValue();
                     if (initial != null && !initial.equals("")) {
@@ -222,10 +241,19 @@ public class Generator {
                         resolveInitialState=true;
                         initialStateName = initial;
                     }
+                    break;
+                case "transition":
+                    Element parentStateElement = e.getParentElement();
+                    String fromID = parentStateElement.getAttribute("id").getValue();
+                    String toID = e.getAttribute("target").getValue();
+                    String event =  e.getAttribute("event").getValue();
+                    // TODO: parse action
+                    transitions.add(new Transition(stateMap.get(fromID), stateMap.get(toID), event, "notimplemented"));
+                    break;
             }
 
             for (Element subElement : e.getChildren()) {
-                handleElement(subElement);
+                handleOtherElement(subElement);
             }
         }
 
