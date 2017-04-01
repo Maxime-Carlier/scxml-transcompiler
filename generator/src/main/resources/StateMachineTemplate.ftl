@@ -7,11 +7,11 @@ import java.util.Optional;
  * @author Maxime
  */
 public class StateMachine {
-    private static State initialState;
-    private static State currentState;
-    private static LinkedList<Event> eventQueue = new LinkedList<>();
+    private State initialState;
+    private State currentState;
+    private LinkedList<Event> eventQueue = new LinkedList<>();
 
-    public static void build() {
+    public StateMachine() {
         // Generated states
         <#list fsm.states as s>
         State ${s.name} = new State("${s.name}");
@@ -26,7 +26,7 @@ public class StateMachine {
         currentState = ${fsm.initialState};
     }
 
-    public static void activate() {
+    public void activate() {
         while (!eventQueue.isEmpty()) {
             Event e = eventQueue.removeFirst();
             Optional<Transition> t = currentState.getTransition(e.getName());
@@ -41,7 +41,8 @@ public class StateMachine {
         }
     }
 
-    public static void submitEvent(Event e) {
+    public void submitEvent(String s) {
+        Event e = new Event(s);
         eventQueue.add(e);
         activate();
     }

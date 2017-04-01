@@ -33,7 +33,6 @@ public class Generator {
     private final static String[][] TEMPLATES_IO_ASSOC = {
             {"StateMachineTemplate.ftl", "StateMachine.java"},
             {"EventTemplate.ftl","Event.java"},
-            {"RunnerTemplate.ftl","Runner.java"},
             {"StateTemplate.ftl","State.java"},
             {"TransitionTemplate.ftl", "Transition.java"}
     };
@@ -71,7 +70,6 @@ public class Generator {
         try {
             for (String[] pairing : TEMPLATES_IO_ASSOC) {
                 Template t = cfg.getTemplate(pairing[0]);
-                System.out.println(System.getProperty("user.dir"));
                 File fileOutputDirectory = new File(outputDirectoryWithpackageName);
                 fileOutputDirectory.mkdirs();
                 Writer out = new FileWriter(outputDirectoryWithpackageName + pairing[1]);
@@ -83,13 +81,12 @@ public class Generator {
         } catch (TemplateException e) {
             e.printStackTrace();
         }
-        compile();
     }
 
     /**
      * Compile the sources that matches the names in {@link #outputPath} and instantiate a state machine
      */
-    private Object compile() {
+    public Object compile() {
         try {
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
             compiler.run(null, null, null, outputPath);
@@ -124,6 +121,9 @@ public class Generator {
         private ArrayList<State> states;
         private ArrayList<Transition> transitions;
         private State initialState;
+        private String initialStateName;
+        private boolean initialStateAbsent=false;
+        private boolean resolveInitialState=false;
 
         public GeneratorBuilder() {
             dataModel = new HashMap<>();
@@ -183,8 +183,18 @@ public class Generator {
             // Parse all states in the xml and create instance
             handleElement(document.getRootElement());
 
+            // If initial state was specified in <scxml> root element
+            if (resolveInitialState) {
+                // Parse all states and look for matching instance
+                for (State s : states) {
+                    if (s.getName().equals(initialStateName)) {
+                        initialState = s;
+                    }
+                }
+            }
+
             // If no initial state has been found set the first state as initial (spec 355)
-            if(initialState==null) {
+            if(initialStateAbsent) {
                 initialState = states.get(0);
             }
 
@@ -201,35 +211,23 @@ public class Generator {
          * @param e current element to be processed. On first call, should always be the root of the xml tree
          */
         private void handleElement(Element e) {
-            if (e.getName() == "state") {
-                states.add(new State(e.getAttribute("id").getValue()));
+            switch (e.getName()) {
+                case "state":
+                    states.add(new State(e.getAttribute("id").getValue()));
+                    break;
+                case "scxml":
+                    String initial = e.getAttribute("initial").getValue();
+                    if (initial != null && !initial.equals("")) {
+                        initialStateAbsent=false;
+                        resolveInitialState=true;
+                        initialStateName = initial;
+                    }
             }
+
             for (Element subElement : e.getChildren()) {
                 handleElement(subElement);
             }
         }
-
-        /*public static void buildDataModel() {
-        root = new HashMap<>();
-        Map<String, Object> fsm = new HashMap<>();
-        List<State> states = new ArrayList<>();
-        List<Transition> transitions = new ArrayList<>();
-
-        State state1 = new State("state1");
-        State state2 = new State("state2");
-        states.add(state1);
-        states.add(state2);
-
-        Transition transition1_2 = new Transition(state1, state2, "b1", "Start");
-        transitions.add(transition1_2);
-
-        state1.addTransition(transition1_2);
-
-        fsm.put("states", states);
-        fsm.put("transitions", transitions);
-        fsm.put("initialState", state1.getName());
-        root.put("fsm", fsm);
-    }*/
 
         public ArrayList<State> getStates() {
             return states;
