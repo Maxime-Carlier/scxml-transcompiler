@@ -24,6 +24,9 @@ public class StateMachine {
 
         initialState = ${fsm.initialState};
         currentState = ${fsm.initialState};
+
+        System.out.println("StateMachine initialized");
+        System.out.println("Initial State : " + initialState.getName());
     }
 
     public void activate() {
