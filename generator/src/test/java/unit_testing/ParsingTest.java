@@ -39,7 +39,6 @@ public class ParsingTest {
 
         ArrayList<String> expected = new ArrayList<>();
         expected.add("normalOperation");
-        expected.add("DoorControl");
         expected.add("LampControl");
         expected.add("opened");
         expected.add("isClosing");
@@ -49,6 +48,10 @@ public class ParsingTest {
         expected.add("LampBlinking");
         expected.add("LampBlinkOff");
         expected.add("LampBlinkOn");
+        expected.add("DoorControl");
+        expected.add("DoorControlInitial");
+        expected.add("LampControlInitial");
+        expected.add("parallelState");
 
         ArrayList<String> actual = new ArrayList<>();
         for (State s : g.getStates()) {
@@ -76,6 +79,7 @@ public class ParsingTest {
         expected.add("Saving");
         expected.add("Stopped");
         expected.add("Idle");
+        expected.add("CountAndSave");
 
         ArrayList<String> actual = new ArrayList<>();
         for (State s : g.getStates()) {

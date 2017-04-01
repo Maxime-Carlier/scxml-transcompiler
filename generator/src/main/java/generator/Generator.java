@@ -6,6 +6,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import model.statics.State;
 import model.statics.Transition;
+import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -23,6 +24,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Maxime
@@ -122,7 +124,7 @@ public class Generator {
         private ArrayList<Transition> transitions;
         private State initialState;
         private String initialStateName;
-        private boolean initialStateAbsent=false;
+        private boolean initialStateAbsent=true;
         private boolean resolveInitialState=false;
         private HashMap<String, State> stateMap;
 
@@ -221,6 +223,14 @@ public class Generator {
                     states.add(s2);
                     stateMap.put(s2.getName(), s2);
                     break;
+                case "initial":
+                    // to uniquely identifiate initial tag, we will name them after their parent.
+                    // For example the initial element inside the LampOff State will generate
+                    // a state named initialLampOff
+                    State s3 = new State(e.getParentElement().getAttribute("id").getValue()+"Initial");
+                    states.add(s3);
+                    stateMap.put(s3.getName(), s3);
+                    break;
             }
 
             for (Element subElement : e.getChildren()) {
@@ -234,19 +244,42 @@ public class Generator {
          */
         private void handleOtherElement(Element e) {
             switch (e.getName()) {
+                // Check if the initial state is specified inside the scxml element and set it as initial
                 case "scxml":
-                    String initial = e.getAttribute("initial").getValue();
-                    if (initial != null && !initial.equals("")) {
-                        initialStateAbsent=false;
-                        resolveInitialState=true;
-                        initialStateName = initial;
+                    Attribute initialAttribute = e.getAttribute("initial");
+                    if (initialAttribute!=null) {
+                        String initial = initialAttribute.getValue();
+                        if (initial != null && !initial.equals("")) {
+                            initialStateAbsent=false;
+                            resolveInitialState=true;
+                            initialStateName = initial;
+                        }
                     }
                     break;
                 case "transition":
                     Element parentStateElement = e.getParentElement();
-                    String fromID = parentStateElement.getAttribute("id").getValue();
+                    String fromID=null;
+                    String event;
+
+                    // Checks if the transition attribute is inside a state element or inside a initial element
+                    if (parentStateElement.getName().equals("state")) {
+                        fromID = parentStateElement.getAttribute("id").getValue();
+                    } else if (parentStateElement.getName().equals("initial")) {
+                        fromID = parentStateElement.getParentElement().getAttribute("id").getValue() + "Initial";
+                    } else if (parentStateElement.getName().equals("parallel")) {
+                        fromID = parentStateElement.getAttribute("id").getValue();
+                    }
+
+                    Objects.nonNull(fromID);
                     String toID = e.getAttribute("target").getValue();
-                    String event =  e.getAttribute("event").getValue();
+
+                    if (e.getAttribute("event") != null) {
+                        event =  e.getAttribute("event").getValue();
+                    } else {
+                        // Usefull for initial transition
+                        event = "";
+                    }
+
                     // TODO: parse action
                     transitions.add(new Transition(stateMap.get(fromID), stateMap.get(toID), event, "notimplemented"));
                     break;

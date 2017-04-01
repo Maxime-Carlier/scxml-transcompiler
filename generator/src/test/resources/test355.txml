@@ -6,11 +6,9 @@
        xmlns:conf="http://www.w3.org/2005/scxml-conformance">
 
     <state id="s0">
-        <transition conf:targetpass=""/>
     </state>
 
     <state id="s1">
-        <transition conf:targetfail=""/>
     </state>
 
     <conf:pass/>
