@@ -1,3 +1,6 @@
+package validation;
+
+import bridge.Bridge;
 import generator.Generator;
 import org.jdom2.JDOMException;
 import org.junit.Before;
@@ -10,7 +13,7 @@ import static org.junit.Assert.*;
 /**
  * @author Maxime
  */
-public class IntegrationTest {
+public class Step1ValidationTest {
 
     Generator.GeneratorBuilder g;
 
@@ -27,10 +30,12 @@ public class IntegrationTest {
     }
 
     @Test
-    public void test355() throws JDOMException, IOException {
+    public void Step1ValidationTest() throws JDOMException, IOException {
         ClassLoader cl = getClass().getClassLoader();
-        g.fromXML(cl.getResource("test355.txml").getPath());
+        g.fromXML(cl.getResource("Step1.scxml").getPath());
         Generator gen=g.build();
         gen.generate();
+        Bridge b = new Bridge(gen.compile());
+        assertEquals("opened", b.getCurrentStateName());
     }
 }

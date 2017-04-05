@@ -231,6 +231,10 @@ public class Generator {
                     states.add(s3);
                     stateMap.put(s3.getName(), s3);
                     break;
+                case "final":
+                    State s4 = new State(e.getAttribute("id").getValue());
+                    states.add(s4);
+                    stateMap.put(s4.getName(), s4);
             }
 
             for (Element subElement : e.getChildren()) {

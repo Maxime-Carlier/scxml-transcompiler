@@ -1,4 +1,4 @@
-package unit_testing;
+package unitary;
 
 import generator.Generator;
 

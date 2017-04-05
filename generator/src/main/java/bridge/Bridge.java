@@ -1,6 +1,7 @@
 package bridge;
 
 import model.statics.Event;
+import model.statics.State;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,10 +16,15 @@ import java.util.HashMap;
 public class Bridge {
     private final static String STATE_MACHINE_CLASS_NAME = "generated.StateMachine";
     private final static String SUBMIT_EVENT_METHOD_NAME = "submitEvent";
+    private final static String GET_CURRENT_STATE_METHOD_NAME = "getCurrentState";
+    private final static String GET_NAME_STATE_METHOD_NAME = "getName";
 
     private Method submitEventMethod;
+    private Method getCurrentStateMethod;
+    private Method getName_StateMethod;
 
     private Object stateMachineInstance;
+
 
     public Bridge(Object o) {
         if(!o.getClass().getName().equals(STATE_MACHINE_CLASS_NAME))
@@ -29,6 +35,9 @@ public class Bridge {
             switch (m.getName()) {
                 case SUBMIT_EVENT_METHOD_NAME:
                     submitEventMethod = m;
+                    break;
+                case GET_CURRENT_STATE_METHOD_NAME:
+                    getCurrentStateMethod = m;
                     break;
             }
         }
@@ -42,5 +51,27 @@ public class Bridge {
         } catch (InvocationTargetException e1) {
             e1.printStackTrace();
         }
+    }
+
+    public String getCurrentStateName() {
+        try {
+            Object o = getCurrentStateMethod.invoke(stateMachineInstance);
+            // If the getName method as not yet been initialized do the lookup on the Object
+            if (getName_StateMethod == null) {
+                for (Method m : o.getClass().getMethods()) {
+                    if (m.getName().equals(GET_NAME_STATE_METHOD_NAME)) {
+                        getName_StateMethod = m;
+                        break;
+                    }
+                }
+            }
+            String s = (String) getName_StateMethod.invoke(o);
+            return s;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        throw new IllegalStateException("Current state name could not be obtained from StateMachine");
     }
 }

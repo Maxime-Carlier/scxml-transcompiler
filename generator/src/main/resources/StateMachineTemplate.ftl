@@ -49,4 +49,8 @@ public class StateMachine {
         eventQueue.add(e);
         activate();
     }
+
+    public State getCurrentState() {
+        return currentState;
+    }
 }
