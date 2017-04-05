@@ -52,6 +52,8 @@ public class ParsingTest {
         expected.add("DoorControlInitial");
         expected.add("LampControlInitial");
         expected.add("parallelState");
+        expected.add("Final_2");
+
 
         ArrayList<String> actual = new ArrayList<>();
         for (State s : g.getStates()) {
@@ -80,6 +82,7 @@ public class ParsingTest {
         expected.add("Stopped");
         expected.add("Idle");
         expected.add("CountAndSave");
+        expected.add("Final_1");
 
         ArrayList<String> actual = new ArrayList<>();
         for (State s : g.getStates()) {
