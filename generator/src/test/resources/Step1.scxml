@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" name="Step1" qt:editorversion="4.2.1" xmlns:qt="http://www.qt.io/2015/02/scxml-ext">
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" name="Step1" qt:editorversion="4.2.1">
     <state id="opened">
         <qt:editorinfo scenegeometry="157.57;259.88;97.57;209.88;120;100" geometry="157.57;259.88;-60;-50;120;100"/>
         <transition type="external" event="close" target="isClosing">
@@ -28,9 +28,9 @@
     </state>
     <state id="isOpening">
         <qt:editorinfo scenegeometry="402.10;443.03;342.10;393.03;120;100" geometry="402.10;443.03;-60;-50;120;100"/>
-        <transition type="external" event="stopOpeningMotor" target="opened">
-            <qt:editorinfo endTargetFactors="81.59;78.23"/>
-            <send event="isOpened"/>
+        <transition type="external" event="isOpen" target="opened">
+            <qt:editorinfo endTargetFactors="81.59;78.23" localGeometry="-125.85;-93.11"/>
+            <send event="stopOpeningMotor"/>
         </transition>
     </state>
     <final id="Final_1">

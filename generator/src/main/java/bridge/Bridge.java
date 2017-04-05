@@ -18,10 +18,12 @@ public class Bridge {
     private final static String SUBMIT_EVENT_METHOD_NAME = "submitEvent";
     private final static String GET_CURRENT_STATE_METHOD_NAME = "getCurrentState";
     private final static String GET_NAME_STATE_METHOD_NAME = "getName";
+    private final static String CONNECT_TO_EVENT_METHOD_NAME = "connectToEvent";
 
     private Method submitEventMethod;
     private Method getCurrentStateMethod;
     private Method getName_StateMethod;
+    private Method connectToEventMethod;
 
     private Object stateMachineInstance;
 
@@ -38,6 +40,9 @@ public class Bridge {
                     break;
                 case GET_CURRENT_STATE_METHOD_NAME:
                     getCurrentStateMethod = m;
+                    break;
+                case CONNECT_TO_EVENT_METHOD_NAME:
+                    connectToEventMethod = m;
                     break;
             }
         }
@@ -73,5 +78,15 @@ public class Bridge {
             e.printStackTrace();
         }
         throw new IllegalStateException("Current state name could not be obtained from StateMachine");
+    }
+
+    public void connectToEvent(String eventName, Object targetInstance, Method targetMethod) {
+        try {
+            connectToEventMethod.invoke(stateMachineInstance, eventName, targetInstance, targetMethod);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 }

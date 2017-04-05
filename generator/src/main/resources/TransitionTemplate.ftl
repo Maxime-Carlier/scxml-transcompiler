@@ -1,5 +1,7 @@
 package generated;
 
+import java.util.Objects;
+
 /**
  * @author Maxime
  */
@@ -10,6 +12,8 @@ public class Transition {
     private String action;
 
     public Transition(State stateFrom, State stateTo, String event, String action) {
+    Objects.requireNonNull(stateFrom, "stateFrom cannot be null");
+    Objects.requireNonNull(stateFrom, "stateTo cannot be null");
         this.stateFrom = stateFrom;
         this.stateTo = stateTo;
         this.event = event;

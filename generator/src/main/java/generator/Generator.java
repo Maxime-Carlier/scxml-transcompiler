@@ -21,10 +21,7 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Maxime
@@ -34,9 +31,10 @@ public class Generator {
     // Static association 2d array to link template input name to class output name
     private final static String[][] TEMPLATES_IO_ASSOC = {
             {"StateMachineTemplate.ftl", "StateMachine.java"},
-            {"EventTemplate.ftl","Event.java"},
-            {"StateTemplate.ftl","State.java"},
-            {"TransitionTemplate.ftl", "Transition.java"}
+            {"EventTemplate.ftl", "Event.java"},
+            {"StateTemplate.ftl", "State.java"},
+            {"TransitionTemplate.ftl", "Transition.java"},
+            {"MethodExecutorTemplate.ftl", "MethodExecutor.java"}
     };
 
     // Fully Qualified class name for dynamic instantiation after generation by the ClassLoader
@@ -274,7 +272,7 @@ public class Generator {
                         fromID = parentStateElement.getAttribute("id").getValue();
                     }
 
-                    Objects.nonNull(fromID);
+                    Objects.requireNonNull(fromID);
                     String toID = e.getAttribute("target").getValue();
 
                     if (e.getAttribute("event") != null) {
@@ -284,11 +282,19 @@ public class Generator {
                         event = "";
                     }
 
+                    // Parse action ('send' only for now)
+                    String sendAction = "";
+                    List<Element> sendChildrens = e.getChildren("send", e.getNamespace());
+                    if (sendChildrens.size() > 0) {
+                        sendAction = sendChildrens.get(0).getAttributeValue("event");
+                    }
+
                     // TODO: parse action
-                    transitions.add(new Transition(stateMap.get(fromID), stateMap.get(toID), event, "notimplemented"));
+                    transitions.add(new Transition(stateMap.get(fromID), stateMap.get(toID), event, sendAction));
                     break;
             }
 
+            // Recursion for infix traversal
             for (Element subElement : e.getChildren()) {
                 handleOtherElement(subElement);
             }
