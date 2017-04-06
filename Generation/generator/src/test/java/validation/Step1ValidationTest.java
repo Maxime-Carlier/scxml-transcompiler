@@ -66,7 +66,7 @@ public class Step1ValidationTest {
     }
 
     @Test
-    public void Step1ValidationTest() throws JDOMException, IOException {
+    public synchronized void Step1ValidationTest() throws JDOMException, IOException, InterruptedException {
         ClassLoader cl = getClass().getClassLoader();
         g.fromXML(cl.getResource("Step1.scxml").getPath());
         Generator gen=g.build();
@@ -83,38 +83,46 @@ public class Step1ValidationTest {
         assertEquals("opened", b.getCurrentStateName());
 
         b.submitEvent("close");
-        //assertEquals(true, checkMark_startClosingMotor);
+        wait();
+        assertEquals(true, checkMark_startClosingMotor);
         assertEquals("isClosing", b.getCurrentStateName());
 
         b.submitEvent("isClosed");
-        //assertEquals(true, checkMark_stopClosingMotor);
+        wait();
+        assertEquals(true, checkMark_stopClosingMotor);
         assertEquals("closed", b.getCurrentStateName());
 
         b.submitEvent("open");
-        //assertEquals(true, checkMark_startOpeningMotor);
+        wait();
+        assertEquals(true, checkMark_startOpeningMotor);
         assertEquals("isOpening", b.getCurrentStateName());
 
         b.submitEvent("isOpen");
-        //assertEquals(true, checkMark_stopOpeningMotor);
+        wait();
+        assertEquals(true, checkMark_stopOpeningMotor);
         assertEquals("opened", b.getCurrentStateName());
 
         b.submitEvent("stop");
         // TODO final and terminated
     }
 
-    public void validate_checkMark_startClosingMotor() {
+    public synchronized void validate_checkMark_startClosingMotor() {
         checkMark_startClosingMotor=true;
+        notify();
     }
 
-    public void validate_checkMark_stopClosingMotor() {
+    public synchronized void validate_checkMark_stopClosingMotor() {
         checkMark_stopClosingMotor=true;
+        notify();
     }
 
-    public void validate_checkMark_startOpeningMotor() {
+    public synchronized void validate_checkMark_startOpeningMotor() {
         checkMark_startOpeningMotor=true;
+        notify();
     }
 
-    public void validate_checkMark_stopOpeningMotor() {
+    public synchronized void validate_checkMark_stopOpeningMotor() {
         checkMark_stopOpeningMotor=true;
+        notify();
     }
 }
