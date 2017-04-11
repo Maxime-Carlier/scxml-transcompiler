@@ -80,6 +80,13 @@ public class Bridge {
         throw new IllegalStateException("Current state name could not be obtained from StateMachine");
     }
 
+    /**
+     * Set the method targetMethod from the instance targetInstance to be executed when the event named
+     * eventName is raised inside this state machine session
+     * @param eventName the name of the event that trigger the method call
+     * @param targetInstance a class instance that is holding the target method
+     * @param targetMethod the method that exist within the target instance to be called when the event is raised
+     */
     public void connectToEvent(String eventName, Object targetInstance, Method targetMethod) {
         try {
             connectToEventMethod.invoke(stateMachineInstance, eventName, targetInstance, targetMethod);

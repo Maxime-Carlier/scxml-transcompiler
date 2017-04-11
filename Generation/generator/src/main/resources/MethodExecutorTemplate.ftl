@@ -10,7 +10,6 @@ public class MethodExecutor {
 
     public MethodExecutor(Method targetmethod, Object targetInstance) {
     Objects.requireNonNull(targetmethod, "targetmethod cannot be null");
-    Objects.requireNonNull(targetInstance, "targetInstance cannot be null");
         this.targetmethod = targetmethod;
         this.targetInstance = targetInstance;
     }

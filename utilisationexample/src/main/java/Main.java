@@ -8,7 +8,7 @@ import java.io.IOException;
  * @author Maxime
  */
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchMethodException {
         ClassLoader cl = ClassLoader.getSystemClassLoader();
         Generator g = null;
         try {
@@ -24,7 +24,11 @@ public class Main {
         }
         g.generate();
         Bridge b = new Bridge(g.compile());
-
+        b.connectToEvent("startClosingMotor", null, Main.class.getMethod("sayHello"));
         b.submitEvent("close");
+    }
+
+    public static void sayHello() {
+        System.out.println("Hello World !");
     }
 }
