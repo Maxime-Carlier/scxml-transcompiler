@@ -143,11 +143,24 @@ public class Generator {
             cfg.setDefaultEncoding("UTF-8");
             cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
             cfg.setLogTemplateExceptions(false);
+            cfg.setClassForTemplateLoading(getClass(), "/");
             return this;
         }
 
         /**
-         * Set the folder containing the .ftl templates
+         * Create the configuration without the classLoader folder. This is for development purpose
+         * @return this
+         */
+        public GeneratorBuilder withDebugConfig() {
+            cfg = new Configuration(Configuration.VERSION_2_3_25);
+            cfg.setDefaultEncoding("UTF-8");
+            cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+            cfg.setLogTemplateExceptions(false);
+            return this;
+        }
+
+        /**
+         * Set the folder containing the .ftl templates. This is for developpment purpose only
          * @param directory the directory that contains the templates
          * @return this
          * @throws IOException
