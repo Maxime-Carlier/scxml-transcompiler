@@ -5,13 +5,14 @@ import java.util.Objects;
 /**
  * @author Maxime
  */
-public class Transition {
-    private State stateFrom;
-    private State stateTo;
-    private String event;
-    private String action;
+public abstract class AbstractTransition {
+    protected AbstractState stateFrom;
+    protected AbstractState stateTo;
+    protected String event;
+    protected String action;
+    protected StateMachine context;
 
-    public Transition(State stateFrom, State stateTo, String event, String action) {
+    public AbstractTransition(StateMachine context, AbstractState stateFrom, AbstractState stateTo, String event, String action) {
     Objects.requireNonNull(stateFrom, "stateFrom cannot be null");
     Objects.requireNonNull(stateFrom, "stateTo cannot be null");
         this.stateFrom = stateFrom;
@@ -20,11 +21,11 @@ public class Transition {
         this.action = action;
     }
 
-    public State getStateFrom() {
+    public AbstractState getStateFrom() {
         return stateFrom;
     }
 
-    public State getStateTo() {
+    public AbstractState getStateTo() {
         return stateTo;
     }
 
@@ -36,7 +37,5 @@ public class Transition {
         return action;
     }
 
-    public void execute() {
-        System.out.println("Executing action : "+action);
-    }
+    public abstract void execute();
 }

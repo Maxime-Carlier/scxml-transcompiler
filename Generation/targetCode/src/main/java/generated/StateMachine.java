@@ -21,17 +21,22 @@ public class StateMachine {
         subscribers = new HashMap<>();
 
         // Generated states
-    <#list fsm.states as s>
-        SimpleState ${s.name} = new SimpleState("${s.name}");
-    </#list>
+                SimpleState opened = new SimpleState("opened");
+        SimpleState isClosing = new SimpleState("isClosing");
+        SimpleState closed = new SimpleState("closed");
+        SimpleState isOpening = new SimpleState("isOpening");
+        SimpleState Final_1 = new SimpleState("Final_1");
 
-        // Generated Transition
-    <#list fsm.transitions as t>
-        ${t.stateFrom.name}.addTransition(new SimpleTransition(this, ${t.stateFrom.name}, ${t.stateTo.name}, "${t.event}", "${t.action}"));
-    </#list>
+        // Generated AbstractTransition
+        opened.addTransition(new SimpleTransition(this, opened, isClosing, "close", "startClosingMotor"));
+        opened.addTransition(new SimpleTransition(this, opened, Final_1, "stop", ""));
+        isClosing.addTransition(new SimpleTransition(this, isClosing, closed, "isClosed", "stopClosingMotor"));
+        closed.addTransition(new SimpleTransition(this, closed, isOpening, "open", "startOpeningMotor"));
+        closed.addTransition(new SimpleTransition(this, closed, Final_1, "stop", ""));
+        isOpening.addTransition(new SimpleTransition(this, isOpening, opened, "isOpen", "stopOpeningMotor"));
 
-        initialState = ${fsm.initialState};
-        currentState = ${fsm.initialState};
+        initialState = opened;
+        currentState = opened;
 
         System.out.println("StateMachine initialized");
         System.out.println("Initial State : " + initialState.getName());

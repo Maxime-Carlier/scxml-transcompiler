@@ -9,6 +9,11 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) throws NoSuchMethodException {
+        demo_connectToEvent();
+    }
+
+    // Demonstrate the use of connectToEvent
+    public static void demo_connectToEvent() throws NoSuchMethodException {
         ClassLoader cl = ClassLoader.getSystemClassLoader();
         Generator g = null;
         try {

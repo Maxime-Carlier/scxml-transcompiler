@@ -32,9 +32,14 @@ public class Generator {
     private final static String[][] TEMPLATES_IO_ASSOC = {
             {"StateMachineTemplate.ftl", "StateMachine.java"},
             {"EventTemplate.ftl", "Event.java"},
-            {"StateTemplate.ftl", "State.java"},
-            {"TransitionTemplate.ftl", "Transition.java"},
-            {"MethodExecutorTemplate.ftl", "MethodExecutor.java"}
+            {"SimpleStateTemplate.ftl", "SimpleState.java"},
+            {"SimpleTransitionTemplate.ftl", "SimpleTransition.java"},
+            {"MethodExecutorTemplate.ftl", "MethodExecutor.java"},
+            {"AbstractStateTemplate.ftl", "AbstractState.java"},
+            {"AbstractTransitionTemplate.ftl", "AbstractTransition.java"},
+            {"ParallelStateTemplate.ftl", "ParallelState.java"},
+            {"SendTransitionTemplate.ftl", "SendTransition.java"},
+
     };
 
     // Fully Qualified class name for dynamic instantiation after generation by the ClassLoader
@@ -296,14 +301,16 @@ public class Generator {
                     }
 
                     // Parse action ('send' only for now)
-                    String sendAction = "";
+                    String sendAction = null;
+                    String type = "simple";
                     List<Element> sendChildrens = e.getChildren("send", e.getNamespace());
                     if (sendChildrens.size() > 0) {
                         sendAction = sendChildrens.get(0).getAttributeValue("event");
+                        type = "send";
                     }
 
                     // TODO: parse action
-                    transitions.add(new Transition(stateMap.get(fromID), stateMap.get(toID), event, sendAction));
+                    transitions.add(new Transition(stateMap.get(fromID), stateMap.get(toID), event, sendAction, type));
                     break;
             }
 
