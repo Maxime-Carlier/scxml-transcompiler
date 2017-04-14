@@ -13,6 +13,10 @@ import java.util.Objects;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * This set of test validate the following comportment :
+ *      - We can generate valid code for a SCXML that contains only standard states and send transition.
+ *      - We can connect a method of out choice to an event sent inside the StateMachine session
+ *      - The submitted event are handled and bring the StateMachine in valid states
  * @author Maxime
  */
 public class Step1ValidationTest {

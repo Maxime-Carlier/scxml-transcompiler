@@ -37,7 +37,7 @@ public class ParsingTest {
     @Test
     public void stateNameParsingTest1() throws JDOMException, IOException {
         ClassLoader cl = getClass().getClassLoader();
-        g.fromXML(cl.getResource("course_fsm.scxml").getPath());
+        g.fromXML(cl.getResource("Step2.scxml" ).getPath());
 
         ArrayList<String> expected = new ArrayList<>();
         expected.add("normalOperation");

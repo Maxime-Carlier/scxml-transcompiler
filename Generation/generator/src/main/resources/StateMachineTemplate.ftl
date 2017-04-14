@@ -27,7 +27,7 @@ public class StateMachine {
 
         // Generated Transition
     <#list fsm.transitions as t>
-    <#--Null check-->
+    <#--Null check. If action is not null, then t.action is present and we have to create a SendTransition-->
         <#if t.action??>
             ${t.stateFrom.name}.addTransition(new SendTransition(this, ${t.stateFrom.name}, ${t.stateTo.name}, "${t.event}" , "${t.action}" ));
         <#else>
@@ -67,7 +67,7 @@ public class StateMachine {
     * Internal method to handle event
     */
     private void handleEvent(Event e) {
-        currentState.handleEvent(e.getName());
+        currentState=currentState.handleEvent(e.getName());
     }
 
     /**
