@@ -22,18 +22,23 @@ public class StateMachine {
 
         // Generated states
     <#list fsm.states as s>
-        SimpleState ${s.name} = new SimpleState("${s.name}");
+        SimpleState ${s.name} = new SimpleState("${s.name}" );
     </#list>
 
         // Generated Transition
     <#list fsm.transitions as t>
-        ${t.stateFrom.name}.addTransition(new SimpleTransition(this, ${t.stateFrom.name}, ${t.stateTo.name}, "${t.event}", "${t.action}"));
+    <#--Null check-->
+        <#if t.action??>
+            ${t.stateFrom.name}.addTransition(new SendTransition(this, ${t.stateFrom.name}, ${t.stateTo.name}, "${t.event}" , "${t.action}" ));
+        <#else>
+            ${t.stateFrom.name}.addTransition(new SimpleTransition(this, ${t.stateFrom.name}, ${t.stateTo.name}, "${t.event}"));
+        </#if>
     </#list>
 
         initialState = ${fsm.initialState};
         currentState = ${fsm.initialState};
 
-        System.out.println("StateMachine initialized");
+        System.out.println("StateMachine initialized" );
         System.out.println("Initial State : " + initialState.getName());
     }
 
@@ -46,7 +51,7 @@ public class StateMachine {
     */
     public void activate() {
         // Exit when statemachine is once again stable
-        while (! (internalEventQueue.isEmpty() && externalEventQueue.isEmpty()) ) {
+        while (!(internalEventQueue.isEmpty() && externalEventQueue.isEmpty())) {
             // Handle internal events first
             while (!internalEventQueue.isEmpty()) {
                 handleEvent(internalEventQueue.removeFirst());

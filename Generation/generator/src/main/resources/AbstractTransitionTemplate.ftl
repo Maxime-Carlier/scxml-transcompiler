@@ -15,6 +15,8 @@ public abstract class AbstractTransition {
     public AbstractTransition(StateMachine context, AbstractState stateFrom, AbstractState stateTo, String event, String action) {
         Objects.requireNonNull(stateFrom, "stateFrom cannot be null");
         Objects.requireNonNull(stateFrom, "stateTo cannot be null");
+        Objects.requireNonNull(context, "context cannot be null" );
+        this.context = context;
         this.stateFrom = stateFrom;
         this.stateTo = stateTo;
         this.event = event;

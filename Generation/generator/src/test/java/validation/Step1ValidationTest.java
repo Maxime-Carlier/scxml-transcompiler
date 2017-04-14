@@ -4,14 +4,13 @@ import bridge.Bridge;
 import generator.Generator;
 import org.jdom2.JDOMException;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Maxime

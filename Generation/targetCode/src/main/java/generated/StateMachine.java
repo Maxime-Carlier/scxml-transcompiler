@@ -28,12 +28,12 @@ public class StateMachine {
         SimpleState Final_1 = new SimpleState("Final_1");
 
         // Generated AbstractTransition
-        opened.addTransition(new SimpleTransition(this, opened, isClosing, "close", "startClosingMotor"));
-        opened.addTransition(new SimpleTransition(this, opened, Final_1, "stop", ""));
-        isClosing.addTransition(new SimpleTransition(this, isClosing, closed, "isClosed", "stopClosingMotor"));
-        closed.addTransition(new SimpleTransition(this, closed, isOpening, "open", "startOpeningMotor"));
-        closed.addTransition(new SimpleTransition(this, closed, Final_1, "stop", ""));
-        isOpening.addTransition(new SimpleTransition(this, isOpening, opened, "isOpen", "stopOpeningMotor"));
+        opened.addTransition(new SendTransition(this, opened, isClosing, "close", "startClosingMotor"));
+        opened.addTransition(new SendTransition(this, opened, Final_1, "stop", ""));
+        isClosing.addTransition(new SendTransition(this, isClosing, closed, "isClosed", "stopClosingMotor"));
+        closed.addTransition(new SendTransition(this, closed, isOpening, "open", "startOpeningMotor"));
+        closed.addTransition(new SendTransition(this, closed, Final_1, "stop", ""));
+        isOpening.addTransition(new SendTransition(this, isOpening, opened, "isOpen", "stopOpeningMotor"));
 
         initialState = opened;
         currentState = opened;
@@ -67,7 +67,7 @@ public class StateMachine {
     * Internal method to handle event
     */
     private void handleEvent(Event e) {
-        currentState.handleEvent(e.getName());
+        currentState=currentState.handleEvent(e.getName());
     }
 
     /**
