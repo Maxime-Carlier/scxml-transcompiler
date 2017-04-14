@@ -7,8 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.Objects;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Maxime
@@ -23,7 +23,7 @@ public class Step2ValidationTest {
             g = new Generator.GeneratorBuilder()
                     .withDefaultConfig()
                     .templatesDirectory(Generator.GeneratorBuilder.DEFAULT_RESOURCE_DIRECTORY)
-                    .outputDirectory("StateMachine1");
+                    .outputDirectory("StateMachine2");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,5 +37,7 @@ public class Step2ValidationTest {
         gen.generate();
 
         Bridge b = new Bridge(gen.compile());
+
+        //assertEquals("normalOperation" , b.getCurrentStateName());
     }
 }
