@@ -1,27 +1,15 @@
 # Finite State Machine
 # SCXML Transcompiler
+## Generation/
 
-### Author
-* Maxime Carlier
+### Directory Layout
 
-### Requirement
-
-This project uses Maven for dependency management.
-
-### Dependency Overview
-
-* `Apache FreeMarker` is the template Engine
-* `Apache commons-scxml` will be used as a SCXML parser
-
-### Project Layout
-
-There are two Maven module in this project :
-* `generator/` is a template based engine aimed at producing standalone code of a FSM from a given SCXML input file.
+There are two Maven project in this project :
+* `generator/` is a template based engine aimed at producing standalone executable code of a FSM from a given SCXML input file.
 * `targetCode/` is a hand made implementation. It is the object model of the code that I'm aiming to produce with
-the generator.
+the generator. It's here because it's easier working on Classe than on Templates
 
-### Implementation Overview
+### Usage
 
-The FSM generator will use the template engine to produce a standalone code that can be compiled as is.
-The code produced will be the Object Oriented implementation of an FSM implementing the functionality 
-described by the input SCXML file.
+You shouldn't have to do any modification in this files as there are the sources.
+Simply `cd generator/` and `maven install` so that the plugin is installed inside the local repository
