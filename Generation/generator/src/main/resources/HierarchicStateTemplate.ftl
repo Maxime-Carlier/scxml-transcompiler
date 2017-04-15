@@ -30,7 +30,7 @@ public class HierarchicState extends AbstractState {
     @Override
     protected AbstractState handleEvent(String eventName) {
         if (eventIsMappedOnChilds(eventName)) {
-            childState.handleEvent(eventName);
+            childState=childState.handleEvent(eventName);
             return this;
         }
         else {

@@ -9,8 +9,32 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) throws NoSuchMethodException {
-        //demo_connectToEvent();
+        demo_step1();
+        demo_connectToEvent();
         demo_step2();
+    }
+
+    public static void demo_step1() {
+        ClassLoader cl = ClassLoader.getSystemClassLoader();
+        Generator g = null;
+        try {
+            g = new Generator.GeneratorBuilder()
+                    .withDefaultConfig()
+                    .outputDirectory("StateMachineStep1")
+                    .fromXML(cl.getResource("portal.scxml").getPath())
+                    .build();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JDOMException e) {
+            e.printStackTrace();
+        }
+        g.generate();
+        Bridge b = new Bridge(g.compile());
+        b.submitEvent("close");
+        b.submitEvent("isClosed");
+        b.submitEvent("open");
+        b.submitEvent("isOpen");
+        b.submitEvent("stop");
     }
 
     // Demonstrate the use of connectToEvent
@@ -20,7 +44,7 @@ public class Main {
         try {
             g = new Generator.GeneratorBuilder()
                     .withDefaultConfig()
-                    .outputDirectory("StateMachine1")
+                    .outputDirectory("StateMachinePortal")
                     .fromXML(cl.getResource("portal.scxml").getPath())
                     .build();
         } catch (IOException e) {
@@ -51,6 +75,7 @@ public class Main {
         g.generate();
         Bridge b = new Bridge(g.compile());
         b.submitEvent("close");
+        b.submitEvent("isClosed");
     }
 
     public static void sayHello() {
