@@ -9,10 +9,12 @@ import java.util.Optional;
 
 public class State {
     private String name;
+    private String type;
     private HashMap<String, Transition> transitionMap;
 
-    public State(String name) {
+    public State(String name, String transitionType) {
         this.name = name;
+        this.type = transitionType;
         this.transitionMap = new HashMap<>();
     }
 
@@ -35,5 +37,9 @@ public class State {
 
     public String getName() {
         return name;
+    }
+
+    public String getType() {
+        return type;
     }
 }

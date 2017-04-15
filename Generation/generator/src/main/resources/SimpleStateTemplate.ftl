@@ -9,8 +9,7 @@ import java.util.HashMap;
 public class SimpleState extends AbstractState{
 
     public SimpleState(String name) {
-        this.name = name;
-        this.transitionMap = new HashMap<>();
+        super(name);
     }
 
     @Override

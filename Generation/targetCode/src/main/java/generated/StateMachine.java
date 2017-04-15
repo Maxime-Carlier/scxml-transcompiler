@@ -42,6 +42,7 @@ public class StateMachine {
         normalOperation.setChildState(parallelState);
         parallelState.addChildState(DoorControl);
         parallelState.addChildState(LampControl);
+
         DoorControl.setChildState(opened);
         LampControl.setChildState(LampOff);
         LampBlinking.setChildState(LampBlinkOff);

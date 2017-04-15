@@ -37,7 +37,6 @@ public class Step2ValidationTest {
         gen.generate();
 
         Bridge b = new Bridge(gen.compile());
-
-        //assertEquals("normalOperation" , b.getCurrentStateName());
+        b.submitEvent("close");
     }
 }

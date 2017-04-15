@@ -10,6 +10,11 @@ public abstract class AbstractState {
     protected String name;
     protected HashMap<String, AbstractTransition> transitionMap;
 
+    public AbstractState(String name) {
+        this.name = name;
+        this.transitionMap = new HashMap<>();
+    }
+
     public void addTransition(AbstractTransition t) {
         transitionMap.put(t.getEvent(), t);
     }
@@ -46,7 +51,7 @@ public abstract class AbstractState {
             onExit();
             transition.execute();
             transition.getStateTo().onEntry();
-            System.out.println("Entering state : " + name);
+            System.out.println("Entering state : " + transition.getStateTo().getName());
             return transition.getStateTo();
         }
         return this;

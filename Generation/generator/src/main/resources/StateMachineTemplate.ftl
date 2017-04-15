@@ -22,8 +22,24 @@ public class StateMachine {
 
         // Generated states
     <#list fsm.states as s>
+    <#if s.type=="simple">
         SimpleState ${s.name} = new SimpleState("${s.name}" );
+    <#elseif s.type=="hierarchic">
+        HierarchicState ${s.name} = new HierarchicState("${s.name}" );
+    <#elseif s.type=="parallel">
+        ParallelState ${s.name} = new ParallelState("${s.name}" );
+    </#if>
     </#list>
+
+        // Set Hierarchie
+        <#list fsm.simplehierarchie as sh>
+            ${sh.stateOwner}.setChildState(${sh.stateChild});
+        </#list >
+        <#list fsm.parallelhierarchie as ph>
+            <#list ph.childs as c>
+                ${ph.stateOwner}.addChildState(${c});
+            </#list>
+        </#list>
 
         // Generated Transition
     <#list fsm.transitions as t>
@@ -40,6 +56,7 @@ public class StateMachine {
 
         System.out.println("StateMachine initialized" );
         System.out.println("Initial State : " + initialState.getName());
+        System.out.println("");
     }
 
     /**
@@ -61,6 +78,7 @@ public class StateMachine {
                 handleEvent(externalEventQueue.removeFirst());
             }
         }
+        System.out.println("");
     }
 
     /**

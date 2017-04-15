@@ -4,6 +4,8 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import model.statics.ParallelHierarchie;
+import model.statics.SimpleHierarchie;
 import model.statics.State;
 import model.statics.Transition;
 import org.jdom2.Attribute;
@@ -30,16 +32,16 @@ public class Generator {
 
     // Static association 2d array to link template input name to class output name
     private final static String[][] TEMPLATES_IO_ASSOC = {
-            {"StateMachineTemplate.ftl", "StateMachine.java"},
-            {"EventTemplate.ftl", "Event.java"},
-            {"SimpleStateTemplate.ftl", "SimpleState.java"},
-            {"SimpleTransitionTemplate.ftl", "SimpleTransition.java"},
-            {"MethodExecutorTemplate.ftl", "MethodExecutor.java"},
-            {"AbstractStateTemplate.ftl", "AbstractState.java"},
-            {"AbstractTransitionTemplate.ftl", "AbstractTransition.java"},
-            {"ParallelStateTemplate.ftl", "ParallelState.java"},
-            {"SendTransitionTemplate.ftl", "SendTransition.java"},
-
+            {"AbstractStateTemplate.ftl" , "AbstractState.java"},
+            {"AbstractTransitionTemplate.ftl" , "AbstractTransition.java"},
+            {"EventTemplate.ftl" , "Event.java"},
+            {"HierarchicStateTemplate.ftl" , "HierarchicState.java"},
+            {"MethodExecutorTemplate.ftl" , "MethodExecutor.java"},
+            {"ParallelStateTemplate.ftl" , "ParallelState.java"},
+            {"SendTransitionTemplate.ftl" , "SendTransition.java"},
+            {"SimpleStateTemplate.ftl" , "SimpleState.java"},
+            {"SimpleTransitionTemplate.ftl" , "SimpleTransition.java"},
+            {"StateMachineTemplate.ftl" , "StateMachine.java"}
     };
 
     // Fully Qualified class name for dynamic instantiation after generation by the ClassLoader
@@ -125,6 +127,8 @@ public class Generator {
         private HashMap<String, Object> fsm;
         private ArrayList<State> states;
         private ArrayList<Transition> transitions;
+        private ArrayList<SimpleHierarchie> simpleHierarchies;
+        private ArrayList<ParallelHierarchie> parallelHierarchies;
         private State initialState;
         private String initialStateName;
         private boolean initialStateAbsent=true;
@@ -137,6 +141,8 @@ public class Generator {
             states = new ArrayList<>();
             transitions = new ArrayList<>();
             stateMap = new HashMap<>();
+            simpleHierarchies = new ArrayList<>();
+            parallelHierarchies = new ArrayList<>();
         }
 
         /**
@@ -219,6 +225,8 @@ public class Generator {
             fsm.put("states", states);
             fsm.put("transitions", transitions);
             fsm.put("initialState", initialState.getName());
+            fsm.put("simplehierarchie" , simpleHierarchies);
+            fsm.put("parallelhierarchie" , parallelHierarchies);
             dataModel.put("fsm", fsm);
             return this;
         }
@@ -230,12 +238,34 @@ public class Generator {
         private void handleStatesOnly(Element e) {
             switch (e.getName()) {
                 case "state":
-                    State s = new State(e.getAttribute("id").getValue());
+                    State s;
+                    List<Element> stateChildren = e.getChildren("state", e.getNamespace());
+                    List<Element> parallelChildren = e.getChildren("parallel", e.getNamespace());
+                     if (stateChildren.size() > 0 || parallelChildren.size() > 0) {
+                        s = new State(e.getAttribute("id").getValue(), "hierarchic");
+                        for (Element el : e.getChildren()) {
+                            if (el.getName().equals("parallel") || el.getName().equals("state")) {
+                                SimpleHierarchie sh = new SimpleHierarchie(s.getName(), el.getAttribute("id").getValue());
+                                simpleHierarchies.add(sh);
+                                break;
+                            }
+                        }
+                    } else {
+                        s = new State(e.getAttribute("id").getValue(), "simple");
+                    }
                     states.add(s);
                     stateMap.put(s.getName(), s);
                     break;
                 case "parallel":
-                    State s2 = new State(e.getAttribute("id").getValue());
+                    State s2 = new State(e.getAttribute("id").getValue(), "parallel");
+                    List<Element> stateChildrens = e.getChildren("state", e.getNamespace());
+                    if (stateChildrens.size() > 0) {
+                        ParallelHierarchie p = new ParallelHierarchie(s2.getName());
+                        for (Element el : stateChildrens) {
+                            p.addChild(el.getAttribute("id").getValue());
+                        }
+                        parallelHierarchies.add(p);
+                    }
                     states.add(s2);
                     stateMap.put(s2.getName(), s2);
                     break;
@@ -243,12 +273,12 @@ public class Generator {
                     // to uniquely identifiate initial tag, we will name them after their parent.
                     // For example the initial element inside the LampOff State will generate
                     // a state named initialLampOff
-                    State s3 = new State(e.getParentElement().getAttribute("id").getValue()+"Initial");
+                    State s3 = new State(e.getParentElement().getAttribute("id").getValue()+"Initial", "simple");
                     states.add(s3);
                     stateMap.put(s3.getName(), s3);
                     break;
                 case "final":
-                    State s4 = new State(e.getAttribute("id").getValue());
+                    State s4 = new State(e.getAttribute("id").getValue(), "simple");
                     states.add(s4);
                     stateMap.put(s4.getName(), s4);
             }
