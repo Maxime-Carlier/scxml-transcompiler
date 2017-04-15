@@ -18,6 +18,11 @@ This project uses Maven for dependency management.
 
 This repository contains the source code for a Maven plugin that is aimed to be used to generate executable FSM code from an SCXML input.
 
+### How do I use this ?
+
+Every folder contains a README file that explains what it is and what it does. For ease of navigation, I higly recommend you to use an IDE and import at least the `Generation/generator/` and `Utilisation/`
+The big line being that you must run `mvn install` in the `Generation/generator/` before executing the `Utilisation/` Main class.
+
 ### Project Layout
 
 There are two directory at the root of this project :
