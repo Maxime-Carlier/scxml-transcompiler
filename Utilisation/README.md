@@ -16,7 +16,9 @@ You can find inside this repository a maven project with a main class launching 
 could be real utilisation made of my plugin.
 
 The following scenario are implemented :
+* The standard code generation as per the portal exemple
 * The usage of connectToEvent to call user defined method.
+* The code generation for parallel and hierarchic state
 
 ### How do I use this for my own project ?
 
