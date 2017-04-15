@@ -21,25 +21,52 @@ public class StateMachine {
         subscribers = new HashMap<>();
 
         // Generated states
-                SimpleState opened = new SimpleState("opened");
-        SimpleState isClosing = new SimpleState("isClosing");
-        SimpleState closed = new SimpleState("closed");
-        SimpleState isOpening = new SimpleState("isOpening");
-        SimpleState Final_1 = new SimpleState("Final_1");
 
-        // Generated AbstractTransition
-        opened.addTransition(new SendTransition(this, opened, isClosing, "close", "startClosingMotor"));
-        opened.addTransition(new SendTransition(this, opened, Final_1, "stop", ""));
-        isClosing.addTransition(new SendTransition(this, isClosing, closed, "isClosed", "stopClosingMotor"));
-        closed.addTransition(new SendTransition(this, closed, isOpening, "open", "startOpeningMotor"));
-        closed.addTransition(new SendTransition(this, closed, Final_1, "stop", ""));
-        isOpening.addTransition(new SendTransition(this, isOpening, opened, "isOpen", "stopOpeningMotor"));
+        HierarchicState normalOperation = new HierarchicState("normalOperation");
+        ParallelState parallelState = new ParallelState("parallelState" );
+        HierarchicState LampControl = new HierarchicState("LampControl" );
+        SimpleState LampOff = new SimpleState("LampOff" );
+        HierarchicState LampBlinking = new HierarchicState("LampBlinking" );
+        SimpleState LampBlinkOff = new SimpleState("LampBlinkOff" );
+        SimpleState LampBlinkOn = new SimpleState("LampBlinkOn" );
+        SimpleState LampControlInitial = new SimpleState("LampControlInitial" );
+        HierarchicState DoorControl = new HierarchicState("DoorControl" );
+        SimpleState DoorControlInitial = new SimpleState("DoorControlInitial" );
+        SimpleState opened = new SimpleState("opened" );
+        SimpleState isClosing = new SimpleState("isClosing" );
+        SimpleState isOpening = new SimpleState("isOpening" );
+        SimpleState closed = new SimpleState("closed" );
+        SimpleState Final_2 = new SimpleState("Final_2" );
 
-        initialState = opened;
-        currentState = opened;
+        // Set Hierarchie
+        normalOperation.setChildState(parallelState);
+        parallelState.addChildState(DoorControl);
+        parallelState.addChildState(LampControl);
+        DoorControl.setChildState(opened);
+        LampControl.setChildState(LampOff);
+        LampBlinking.setChildState(LampBlinkOff);
 
-        System.out.println("StateMachine initialized");
+        // Generated Transition
+            LampOff.addTransition(new SimpleTransition(this, LampOff, LampBlinking, "startBlinking"));
+            LampBlinkOff.addTransition(new SimpleTransition(this, LampBlinkOff, LampBlinkOn, "timeout"));
+            LampBlinkOn.addTransition(new SimpleTransition(this, LampBlinkOn, LampBlinkOff, "timeout"));
+            LampBlinking.addTransition(new SimpleTransition(this, LampBlinking, LampOff, "stopBlinking"));
+            LampControlInitial.addTransition(new SimpleTransition(this, LampControlInitial, LampOff, ""));
+            DoorControlInitial.addTransition(new SimpleTransition(this, DoorControlInitial, opened, ""));
+            opened.addTransition(new SendTransition(this, opened, isClosing, "close" , "startBlinking" ));
+            isClosing.addTransition(new SendTransition(this, isClosing, closed, "isClosed" , "stopBlinking" ));
+            isClosing.addTransition(new SimpleTransition(this, isClosing, isOpening, "obstacleDetected"));
+            isOpening.addTransition(new SendTransition(this, isOpening, opened, "osOpened" , "stopBlinking" ));
+            closed.addTransition(new SendTransition(this, closed, isOpening, "open" , "startBlinking" ));
+            normalOperation.addTransition(new SimpleTransition(this, normalOperation, Final_2, "stop"));
+
+        initialState = normalOperation;
+        currentState = normalOperation;
+
+        System.out.println("StateMachine initialized" );
         System.out.println("Initial State : " + initialState.getName());
+        System.out.println("");
+
     }
 
     /**
@@ -51,7 +78,7 @@ public class StateMachine {
     */
     public void activate() {
         // Exit when statemachine is once again stable
-        while (! (internalEventQueue.isEmpty() && externalEventQueue.isEmpty()) ) {
+        while (!(internalEventQueue.isEmpty() && externalEventQueue.isEmpty())) {
             // Handle internal events first
             while (!internalEventQueue.isEmpty()) {
                 handleEvent(internalEventQueue.removeFirst());
@@ -61,6 +88,7 @@ public class StateMachine {
                 handleEvent(externalEventQueue.removeFirst());
             }
         }
+        System.out.println("");
     }
 
     /**

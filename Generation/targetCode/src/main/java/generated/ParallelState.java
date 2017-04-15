@@ -1,19 +1,19 @@
 package generated;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * @author Maxime
  */
 public class ParallelState extends AbstractState {
-    private ArrayList<AbstractState> states;
+    private ArrayList<HierarchicState> childrenStates;
 
     public ParallelState(String name) {
-        this.name = name;
-        transitionMap = new HashMap<>();
-        states = new ArrayList<>();
+        super(name);
+        childrenStates = new ArrayList<>();
     }
+
 
     /**
      * Look at each child recursively to see if the event is mapped onto any child
@@ -22,7 +22,7 @@ public class ParallelState extends AbstractState {
      */
     @Override
     protected boolean eventIsMappedOnChilds(String eventName) {
-        for (AbstractState s : states) {
+        for (AbstractState s : childrenStates) {
             if (s.eventIsMappedOnChilds(eventName)|| s.eventIsMapped(eventName)) {
                 return true;
             }
@@ -38,12 +38,17 @@ public class ParallelState extends AbstractState {
     @Override
     protected AbstractState handleEvent(String eventName) {
         if (eventIsMappedOnChilds(eventName)) {
-            for (AbstractState s : states) {
+            for (AbstractState s : childrenStates) {
                 s.handleEvent(eventName);
             }
             return this;
         } else {
             return handleEventAsOwn(eventName);
         }
+    }
+
+    public void addChildState(HierarchicState s) {
+        Objects.requireNonNull(s);
+        childrenStates.add(s);
     }
 }
