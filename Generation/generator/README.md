@@ -39,8 +39,8 @@ It should in the end, be able to produce the FSM that implement several function
 
 #### Medium
 * Handle standard scxml file (portal.scxml) - ![tested](https://img.shields.io/badge/status-tested-green.svg)
-* Handle Hierarchical states - ![WIP](https://img.shields.io/badge/status-WIP-yellow.svg)
-* Handle Parallel states - ![WIP](https://img.shields.io/badge/status-WIP-yellow.svg)
+* Handle Hierarchical states - ![tested](https://img.shields.io/badge/status-tested-green.svg)
+* Handle Parallel states - ![tested](https://img.shields.io/badge/status-tested-green.svg)
 
 #### Hard
 * Expose connectToEvent functionality - ![tested](https://img.shields.io/badge/status-tested-green.svg)
